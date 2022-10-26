@@ -440,7 +440,6 @@
   materials:
      Steel: 100
      Glass: 900
-    Glass: 900
 
 - type: latheRecipe
   id: SeedExtractorMachineCircuitboard
