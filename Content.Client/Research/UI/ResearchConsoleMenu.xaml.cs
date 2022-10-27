@@ -80,7 +80,21 @@ namespace Content.Client.Research.UI
             TechnologySelected = _unlockableTechnologyPrototypes[obj.ItemIndex];
 
             //TODO check multiple point types
-            UnlockButton.Disabled = Owner.Points["points"] < TechnologySelected.RequiredPoints;
+            UnlockButton.Disabled = false;
+            foreach (KeyValuePair<string, int> requirement in TechnologySelected.RequiredPoints)
+            {
+                if (!Owner.SpecialisationPoints.ContainsKey(requirement.Key))
+                {
+                    UnlockButton.Disabled = true;
+                    break;
+                }
+
+                if (Owner.SpecialisationPoints[requirement.Key] < requirement.Value)
+                {
+                    UnlockButton.Disabled = true;
+                    break;
+                }
+            }
 
             PopulateSelectedTechnology();
         }
@@ -178,12 +192,20 @@ namespace Content.Client.Research.UI
             }
 
             TechnologyIcon.Texture = TechnologySelected.Icon.Frame0();
-            TechnologyName.Text = TechnologySelected.Name;
-            //TODO change to list all required point types
-            TechnologyDescription.Text = TechnologySelected.Description + $"\n{TechnologySelected.RequiredPoints} " + Loc.GetString("research-console-menu-research-points-text" ,("points", Owner.Points["points"])).ToLowerInvariant();
+            TechnologyName.Text = TechnologySelected.Name;     
+            TechnologyDescription.Text = TechnologySelected.Description;
             TechnologyRequirements.Text = Loc.GetString("research-console-tech-requirements-none");
 
             var prototypeMan = IoCManager.Resolve<IPrototypeManager>();
+
+            foreach (KeyValuePair<string, int> requirement in TechnologySelected.RequiredPoints)
+            {
+                //use localisation keys for point keys
+                if (Owner.SpecialisationPoints.ContainsKey(requirement.Key))
+                    TechnologyDescription.Text += $"\n{requirement.Value} " + Loc.GetString(requirement.Key, ("points", Owner.SpecialisationPoints[requirement.Key]));
+                else
+                    TechnologyDescription.Text += $"\n{requirement.Value} " + Loc.GetString(requirement.Key, ("points", 0));
+            }
 
             for (var i = 0; i < TechnologySelected.RequiredTechnologies.Count; i++)
             {
@@ -201,8 +223,12 @@ namespace Content.Client.Research.UI
         /// </summary>
         public void PopulatePoints()
         {
-            //TODO list all available point types
-            PointLabel.Text = Loc.GetString("research-console-menu-research-points-text", ("points", Owner.Points["points"]));
+            PointLabel.Text = "";
+            foreach (KeyValuePair<string, int> requirement in Owner.SpecialisationPoints)
+            {
+                if (requirement.Value > 0)
+                    PointLabel.Text += $"\n"+Loc.GetString(requirement.Key, ("points", requirement.Value));
+            }
             PointsPerSecondLabel.Text = Loc.GetString("research-console-menu-points-per-second-text", ("pointsPerSecond", Owner.PointsPerSecond));
         }
 

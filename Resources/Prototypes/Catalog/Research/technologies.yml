@@ -10,7 +10,9 @@
   icon:
     sprite: Structures/Machines/server.rsi
     state: server-on
-  requiredPoints: 2500
+  requiredPoints:
+    research-points-basic: 2500
+
   #TODO a lathe that prints textbooks with instructions on how to progress each branch of research
  # unlockedRecipes:
  #   - TextBookPrinter 
@@ -26,7 +28,8 @@
   icon:
     sprite: Objects/Misc/stock_parts.rsi
     state: micro_mani
-  requiredPoints: 2500
+  requiredPoints: 
+    research-points-basic: 2500
   requiredTechnologies:
     - BasicResearch
   unlockedRecipes:
@@ -42,7 +45,8 @@
   id: Sheets
   description: technologies-material-sheet-printing-description
   icon: Objects/Materials/Sheets/researchicon.png
-  requiredPoints: 2500
+  requiredPoints: 
+    research-points-basic: 2500
   requiredTechnologies:
     - BasicResearch
   unlockedRecipes:
@@ -116,7 +120,8 @@
   icon:
     sprite: Objects/Specific/Janitorial/janitorial.rsi
     state: mopbucket
-  requiredPoints: 2500
+  requiredPoints: 
+    research-points-basic: 2500
   unlockedRecipes:
     - Bucket
     - MopItem
@@ -145,7 +150,8 @@
   icon:
     sprite: Objects/Specific/Janitorial/janitorial.rsi
     state: analysismopbucket
-  requiredPoints: 5000
+  requiredPoints: 
+    research-points-basic: 5000
   unlockedRecipes:
     - HighCapMopItem
 
@@ -158,7 +164,8 @@
   icon:
     sprite: Objects/Specific/Medical/healthanalyzer.rsi
     state: icon
-  requiredPoints: 2500
+  requiredPoints: 
+    research-points-basic: 2500
   unlockedRecipes:
     - HandheldHealthAnalyzer
     - ClothingHandsGlovesLatex
@@ -173,7 +180,8 @@
     - ChemistryEmptyBottle01
     - MedicalResearchBedCircuitboard
     - ChemicalAnalysisCircuitboard
-    
+
+#TODO remove unlock disks once spec. points implemented
 - type: technology
   name: Chemical analysis laboratory results
   id: ChemTechResults
@@ -199,13 +207,15 @@
 - type: technology
   name: Advanced chemical production
   id: AdvancedChemTech
-  description: Advanced chemical production.
+  description: Advanced chemical production and distribution tools.
   requiredTechnologies:
-   - ChemTechResults
+   - MedicalTech
   icon:
     sprite: Structures/dispensers.rsi
     state: industrial-working
-  requiredPoints: 5000
+  requiredPoints: 
+    research-points-basic: 5000
+    research-points-medical: 5000
   unlockedRecipes:
     - CryostasisBeaker
     - ReagentGrinderMachineCircuitboard
@@ -223,7 +233,8 @@
   icon:
     sprite: Structures/Machines/diagnoser.rsi
     state: icon
-  requiredPoints: 5000
+  requiredPoints: 
+    research-points-basic: 5000
   unlockedRecipes:
     - VaccinatorMachineCircuitboard
     - DiagnoserMachineCircuitboard
@@ -237,7 +248,8 @@
   icon:
     sprite: Structures/Machines/cloning.rsi
     state: pod_0
-  requiredPoints: 5000
+  requiredPoints: 
+    research-points-basic: 5000
   unlockedRecipes:
     - BiomassReclaimerMachineCircuitboard
     - CloningConsoleComputerCircuitboard
@@ -250,7 +262,8 @@
   icon:
     sprite: Objects/Specific/Medical/Surgery/saw.rsi
     state: saw
-  requiredPoints: 5000
+  requiredPoints: 
+    research-points-basic: 5000
   requiredTechnologies:
     - MedTechResults
   unlockedRecipes:
@@ -268,7 +281,8 @@
   icon:
     sprite: Objects/Specific/Medical/handheldcrewmonitor.rsi
     state: icon
-  requiredPoints: 5000
+  requiredPoints: 
+    research-points-basic: 5000
   requiredTechnologies:
     - MedTechResults
   unlockedRecipes:
@@ -286,7 +300,8 @@
   icon:
     sprite: Structures/Machines/protolathe.rsi
     state: icon
-  requiredPoints: 2500
+  requiredPoints: 
+    research-points-basic: 2500
   unlockedRecipes:
     - CableStack
     - CableMVStack
@@ -341,7 +356,8 @@
   icon:
     sprite: Structures/Piping/Atmospherics/thermomachine.rsi
     state: freezer_off
-  requiredPoints: 5000
+  requiredPoints: 
+    research-points-basic: 5000
   requiredTechnologies:
   - PowerTechResults
   unlockedRecipes:
@@ -359,7 +375,8 @@
   icon:
     sprite: Structures/Machines/computers.rsi
     state: avionics-systems
-  requiredPoints: 15000
+  requiredPoints: 
+    research-points-basic: 15000
   requiredTechnologies:
     - PowerTechResults
     - RoboticsTechnology
@@ -376,7 +393,8 @@
   icon:
     sprite: Structures/Power/apc.rsi
     state: apc0
-  requiredPoints: 5000
+  requiredPoints: 
+    research-points-basic: 5000
   requiredTechnologies:
     - PowerTechResults
   unlockedRecipes:
@@ -396,7 +414,8 @@
   icon:
     sprite: Objects/Fun/Instruments/guitar.rsi
     state: icon
-  requiredPoints: 5000
+  requiredPoints: 
+    research-points-basic: 5000
   requiredTechnologies:
     - PowerTechResults
   unlockedRecipes:
@@ -410,7 +429,8 @@
   icon:
     sprite: Objects/Power/power_cells.rsi
     state: small
-  requiredPoints: 5000
+  requiredPoints: 
+    research-points-basic: 5000
   requiredTechnologies:
     - PowerTechResults
   unlockedRecipes:
@@ -423,7 +443,8 @@
   icon:
     sprite: Objects/Power/power_cells.rsi
     state: medium
-  requiredPoints: 10000
+  requiredPoints: 
+    research-points-basic: 10000
   requiredTechnologies:
     - PowerCellBasic
   unlockedRecipes:
@@ -436,7 +457,8 @@
   icon:
     sprite: Objects/Power/power_cells.rsi
     state: high
-  requiredPoints: 15000
+  requiredPoints: 
+    research-points-basic: 15000
   requiredTechnologies:
     - PowerCellAdvanced
   unlockedRecipes:
@@ -449,7 +471,8 @@
   icon:
     sprite: Mobs/Silicon/Bots/honkbot.rsi
     state: honkbot
-  requiredPoints: 10000
+  requiredPoints: 
+    research-points-basic: 10000
   requiredTechnologies:
     - CompactPowerTechnology
   unlockedRecipes:
@@ -464,7 +487,8 @@
   icon:
     sprite: Objects/Misc/stock_parts.rsi
     state: adv_capacitor
-  requiredPoints: 10000
+  requiredPoints: 
+    research-points-basic: 10000
   requiredTechnologies:
     - BasicPartsTechnology
     - PowerTechResults
@@ -485,7 +509,8 @@
   icon:
     sprite: Structures/Furniture/potted_plants.rsi
     state: applebush
-  requiredPoints: 5000
+  requiredPoints: 
+    research-points-basic: 5000
   requiredTechnologies:
     - BasicResearch
   unlockedRecipes:
@@ -501,7 +526,8 @@
   icon:
     sprite: Objects/Specific/Hydroponics/potato.rsi
     state: seed
-  requiredPoints: 10000
+  requiredPoints: 
+    research-points-basic: 10000
   requiredTechnologies:
     - BiologicalTechnology
   unlockedRecipes:

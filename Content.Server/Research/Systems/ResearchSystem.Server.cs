@@ -32,10 +32,10 @@ public sealed partial class ResearchSystem
     private void UpdateServer(ResearchServerComponent component, int time)
     {
         if (!CanRun(component)) return;
-        if (component.SpecialisationPoints.ContainsKey("points"))
-            component.SpecialisationPoints["points"] += PointsPerSecond(component) * time;
+        if (component.SpecialisationPoints.ContainsKey("research-points-basic"))
+            component.SpecialisationPoints["research-points-basic"] += PointsPerSecond(component) * time;
         else
-            component.SpecialisationPoints.Add("points", PointsPerSecond(component) * time);
+            component.SpecialisationPoints.Add("research-points-basic", PointsPerSecond(component) * time);
     }
 
     public bool RegisterServerClient(ResearchServerComponent component, ResearchClientComponent clientComponent)
@@ -81,12 +81,19 @@ public sealed partial class ResearchSystem
         if (!Resolve(component.Owner, ref databaseComponent, false))
             return false;
 
-        //TODO include required points type as parameter and check by required points dict
-        //may need to use a loop here (loop through tech req types, first check if they are all present, then their points)
+        //check by required points dict, loop through tech req types, first check if they are present, then if there are enough points
         if (!databaseComponent.CanUnlockTechnology(technology) ||
-            component.SpecialisationPoints["points"] < technology.RequiredPoints ||
             IsTechnologyUnlocked(component, technology, databaseComponent))
             return false;
+
+        foreach (KeyValuePair<string, int> requirement in technology.RequiredPoints)
+        {
+            if (!component.SpecialisationPoints.ContainsKey(requirement.Key))
+                return false;
+
+            if (component.SpecialisationPoints[requirement.Key] < requirement.Value)
+                return false;
+        }
 
         return true;
     }
@@ -99,10 +106,16 @@ public sealed partial class ResearchSystem
 
         if (!CanUnlockTechnology(component, prototype, databaseComponent)) return false;
         var result = UnlockTechnology(databaseComponent, prototype);
-        //TODO negate the specific points type
-        //may need to use a loop here (loop through tech req types, first check if they are all present, then their points)
+        //negate the specific points type
         if (result)
-            component.SpecialisationPoints["points"] -= prototype.RequiredPoints;
+        {
+            foreach (KeyValuePair<string, int> requirement in prototype.RequiredPoints)
+            {
+                if (!component.SpecialisationPoints.ContainsKey(requirement.Key))
+                    return false;
+                component.SpecialisationPoints[requirement.Key] -= requirement.Value;
+            }
+        }
         return result;
     }
 
@@ -110,9 +123,8 @@ public sealed partial class ResearchSystem
     {
         var points = 0;
 
-        // Is our machine powered, and are we below our limit of passive point gain?
-        //TODO accommodate different point types
-        if (CanRun(component) && component.SpecialisationPoints["points"] < (component.PassiveLimitPerSource * component.PointSources.Count))
+        // Is our machine powered, and are we below our limit of passive point gain? only works for basic points
+        if (CanRun(component) && component.SpecialisationPoints["research-points-basic"] < (component.PassiveLimitPerSource * component.PointSources.Count))
         {
             foreach (var source in component.PointSources)
             {

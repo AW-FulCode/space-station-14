@@ -11,8 +11,8 @@ namespace Content.Server.Research.Components
         /// <summary>
         /// Tracks the different kinds of research points available to the server
         /// </summary>
-        [ViewVariables(VVAccess.ReadWrite)] //[DataField("points")]
-        public Dictionary<string,int> SpecialisationPoints = new Dictionary<string, int>() { { "points", 0 } };
+        [ViewVariables(VVAccess.ReadWrite)]
+        public Dictionary<string,int> SpecialisationPoints = new Dictionary<string, int>() { { "research-points-basic", 0 } };
 
         /// <summary>
         /// To encourage people to spend points,

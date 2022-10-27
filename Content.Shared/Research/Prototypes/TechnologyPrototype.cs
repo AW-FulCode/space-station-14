@@ -51,9 +51,14 @@ namespace Content.Shared.Research.Prototypes
         /// <summary>
         ///    The required research points to unlock this technology.
         /// </summary>
+        //[ViewVariables]
+        //[DataField("requiredPoints")]
+        //public int RequiredPoints { get; }
+
         [ViewVariables]
         [DataField("requiredPoints")]
-        public int RequiredPoints { get; }
+        public Dictionary<string, int> RequiredPoints { get; } = new();
+
 
         /// <summary>
         ///     A list of technology IDs required to unlock this technology.
