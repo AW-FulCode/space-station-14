@@ -12,69 +12,72 @@
 - type: entity
   parent: ResearchDiskBase
   id: ResearchDisk
-  name: research point disk (1000)
-  description: A disk for the R&D server containing 1000 points.
+  name: research credits disk (1000)
+  description: A disk for the R&D server containing 1000 basic research credits.
   components:
   - type: ResearchDisk
-    points: 1000
+    points:
+      research-points-basic: 1000
 
 - type: entity
   parent: ResearchDiskBase
   id: ResearchDisk5000
-  name: research point disk (5000)
-  description: A disk for the R&D server containing 5000 points.
+  name: research credits disk (5000)
+  description: A disk for the R&D server containing 5000 basic research credits.
   components:
   - type: ResearchDisk
-    points: 5000
+    points:
+      research-points-basic: 5000
 
 - type: entity
   parent: ResearchDiskBase
   id: ResearchDisk10000
-  name: research point disk (10000)
-  description: A disk for the R&D server containing 10000 points.
+  name: research credits disk (10000)
+  description: A disk for the R&D server containing 10000 basic research credits.
   components:
   - type: ResearchDisk
-    points: 10000 
+    points:
+      research-points-basic: 10000
 
 - type: entity
   parent: ResearchDiskBase
   id: CleaningTechResultsDisk
-  name: analysis mop bucket results disk
-  description: The results from the analysis mop bucket. Use on the R&D server to unlock more technologies.
+  name: Janitorial Research Credits
+  description: A disk for the R&D server containing 1000 Janitorial research credits.
   components:
   - type: ResearchDisk
-    technology: CleaningTechResults
-    points: 0
+    points:
+      research-points-janitorial: 1000
 
 - type: entity
   parent: ResearchDiskBase
   id: ChemTechResultsDisk
-  name: chemical analysis machine results disk
-  description: The results from the chemical analysis machine. Use on the R&D server to unlock more technologies.
+  name: Medical Research Credits
+  description: A disk for the R&D server containing 1000 Medical research credits.
   components:
   - type: ResearchDisk
-    technology: ChemTechResults
-    points: 0
+    points:
+      research-points-medical: 1000
 
 - type: entity
   parent: ResearchDiskBase
   id: MedTechResultsDisk
-  name: medical research bed results disk
-  description: The results from the research medical bed. Use on the R&D server to unlock more technologies.
+  name: Medical Research Credits
+  description: A disk for the R&D server containing 1000 Medical research credits.
   components:
   - type: ResearchDisk
-    technology: MedTechResults
-    points: 0
+    points:
+      research-points-medical: 1000
 
 - type: entity
   parent: ResearchDiskBase
   id: PowerTechResultsDisk
-  name: research SMES results disk
-  description: The results from the research SMES. Use on the R&D server to unlock more technologies.
+  name: Engineering Research Credits
+  description: A disk for the R&D server containing 1000 Engineering research credits.
   components:
   - type: ResearchDisk
-    technology: PowerTechResults
-    points: 0
+    points:
+      research-points-engineering: 1000
 
 #- type: entity
 #  parent: ResearchDiskBase

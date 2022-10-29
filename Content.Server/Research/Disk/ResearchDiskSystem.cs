@@ -31,10 +31,16 @@ namespace Content.Server.Research.Disk
             protoMan.TryIndex(component.Technology, out TechnologyPrototype? technology);
 
             //TODO different kind of points add
-            server.SpecialisationPoints["research-points-basic"] += component.Points;
-            if (component.Points > 0) {
-                _popupSystem.PopupEntity(Loc.GetString("research-disk-inserted", ("points", component.Points)), args.Target.Value, Filter.Entities(args.User));
-            } else if (technology != null)
+            foreach (KeyValuePair<string, int> newPoints in component.Points)
+            {
+                if (!server.SpecialisationPoints.ContainsKey(newPoints.Key))
+                    server.SpecialisationPoints.Add(newPoints.Key,0);
+                server.SpecialisationPoints[newPoints.Key] += newPoints.Value;
+                if (newPoints.Value > 0)
+                    _popupSystem.PopupEntity(Loc.GetString("research-disk-inserted", ("points", newPoints.Value)), args.Target.Value, Filter.Entities(args.User));
+            }
+ 
+            if (technology != null)
             {
                 _popupSystem.PopupEntity(Loc.GetString("research-unlock-disk-inserted", ("name", technology.Name)), args.Target.Value, Filter.Entities(args.User));
             }

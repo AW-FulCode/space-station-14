@@ -4,10 +4,8 @@ namespace Content.Server.Research.Disk
     public sealed class ResearchDiskComponent : Component
     {
         [DataField("points")]
-        public int Points = 0;
+        public Dictionary<string, int> Points { get; } = new();
         [DataField("technology")]
         public string Technology = "";
-
-        //TODO add different point types
     }
 }
