@@ -35,23 +35,45 @@ namespace Content.Server.Chemistry.Components
         [DataField("machineOutput", required: true)]
         public string MachineOutput = string.Empty;
 
-        //TODO it may be worth separating the reward conditions as a separate component so the same machine can support multiple rewards
         /// <summary>
-        /// What the machine will spawn when the reward condition is met (if both are provided)
+        /// Reagents that will not be displayed by group - overridden by random goals
         /// </summary>
         [ViewVariables]
-        [DataField("researchDiskReward")]
-        public string ResearchDiskReward = string.Empty;
+        [DataField("reagentDisplayExcludedGroupsFilter")]
+        public readonly List<string> ReagentDisplayExcludedGroupsFilter = new();
 
         /// <summary>
-        /// Number of reagents that will trigger the research disk reward (if above 0) mutually exclusive with other reward conditions
+        /// Groups reagents must have to be displayed
+        /// </summary>
+        [ViewVariables]
+        [DataField("reagentDisplayRequiredGroupFilter")]
+        public string ReagentDisplayRequiredGroupFilter = string.Empty;
+
+        /// <summary>
+        /// Reagents that will not be displayed by name
+        /// </summary>
+        [ViewVariables]
+        [DataField("reagentDisplayExcludedNamesFilter")]
+        public readonly List<string> ReagentDisplayExcludedNamesFilter = new();
+
+        /// <summary>
+        /// Number of reagents that will trigger the research disk reward (if above 0) - mutually exclusive with name reward
         /// </summary>
         [ViewVariables]
         [DataField("reagentRewardCount")]
         public int ReagentRewardCount = 0;
 
         /// <summary>
-        /// Reagents required that will trigger the research disk reward (if present) mutually exclusive and overrides with other reward conditions
+        /// if the goal(s) should be the ONLY reagent(s) present within the analyser for the reward
+        /// should be made clear to player (Goal: xyz with no reagents)
+        /// only works for name-based goals
+        /// </summary>
+        [ViewVariables]
+        [DataField("exclusiveGoal")]
+        public bool ExclusiveGoal = false;
+
+        /// <summary>
+        /// Reagents required that will trigger the research disk reward (if present) - mutually exclusive with count reward
         /// </summary>
         [ViewVariables]
         [DataField("reagentsRewardRequiredNames")]
@@ -77,27 +99,6 @@ namespace Content.Server.Chemistry.Components
         [ViewVariables]
         [DataField("reagentRewardExcludedGroupsFilter")]
         public readonly List<string> ReagentRewardExcludedGroupsFilter = new();
-
-        /// <summary>
-        /// Reagents that will not be displayed by group
-        /// </summary>
-        [ViewVariables]
-        [DataField("reagentDisplayExcludedGroupsFilter")]
-        public readonly List<string> ReagentDisplayExcludedGroupsFilter = new();
-
-        /// <summary>
-        /// Groups reagents must have to be displayed
-        /// </summary>
-        [ViewVariables]
-        [DataField("reagentDisplayRequiredGroupFilter")]
-        public string ReagentDisplayRequiredGroupFilter = string.Empty;
-
-        /// <summary>
-        /// Reagents that will not be displayed by name
-        /// </summary>
-        [ViewVariables]
-        [DataField("reagentDisplayExcludedNamesFilter")]
-        public readonly List<string> ReagentDisplayExcludedNamesFilter = new();
 
         /// <summary>
         /// The printer checks this list with the one it has - if the reagents are identical (quantity disregarded) the machine will not print

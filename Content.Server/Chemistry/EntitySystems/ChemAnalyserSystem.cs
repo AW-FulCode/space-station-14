@@ -152,7 +152,9 @@ namespace Content.Server.Chemistry.EntitySystems
             var noRewardWithNames = args.Machine.ReagentRewardExcludedNamesFilter;
             var onlyRewardWithGroup = args.Machine.ReagentRewardRequiredGroupFilter;
 
-            var rewardSolutions = new List<string>();
+            //TODO rework this to factor multiple reward components
+            var rewardSolutions = new List<List<string>>();
+            var goalRewardSolution = false;
 
             if (TryComp<SolutionContainerManagerComponent>(uid, out var solutions))
             {
@@ -183,6 +185,7 @@ namespace Content.Server.Chemistry.EntitySystems
                             }
                         }
 
+                        //TODO rework this to factor random goals and multiple reward components
                         if (!noRewardWithNames.Contains(content.ReagentId))
                         {
                             if ((noRewardWithGroups.Count > 0 || onlyRewardWithGroup != string.Empty))
@@ -206,6 +209,8 @@ namespace Content.Server.Chemistry.EntitySystems
                     sameSet = true;
 
             args.Machine.LastRecordedReagentSet = displayReagents;
+
+            //TODO add reward conditions on top of report
 
             if (!sameSet && displaySolutions.Count > 0)
             {
@@ -238,9 +243,12 @@ namespace Content.Server.Chemistry.EntitySystems
                 MetaData(printed).EntityName = reportTitle;
                 _paperSystem.SetContent(printed, contents.ToMarkup(), paper);
             } else
-                contents.AddMarkup(Loc.GetString("chem-analyser-no-chems"));   
+                contents.AddMarkup(Loc.GetString("chem-analyser-no-chems"));
 
+            //TODO rework this to factor multiple reward components
             var rewardEarned = true;
+            var goalRewardEarned = true;
+
             if (rewardRequiredNames.Count > 0)
             {
                 foreach (var name in (rewardRequiredNames))
@@ -251,13 +259,16 @@ namespace Content.Server.Chemistry.EntitySystems
                 if (!(rewardSolutions.Count >= rewardRequiredCount))
                     rewardEarned = false;
 
+            //TODO rework this to factor multiple reward components
             //disk is printed only once per analyser and paper is only printed if the composition of reagents change
             if (rewardEarned && !args.Machine.DiskPrinted)
             {
                 args.Machine.DiskPrinted = true;
                 Spawn(args.Machine.ResearchDiskReward, Transform(uid).Coordinates);
             }
-                    
+
+            //TODO also remove reagents when goal complete? (make sure the correct ones are removed of course)
+
         }
 
         /// <summary>
