@@ -264,6 +264,8 @@ public sealed partial class ExplosionSystem : EntitySystem
         // epicenter. Conversely, it might go nowhere near as far.
         var radius = 0.5f + IntensityToRadius(totalIntensity, slope, maxIntensity);
 
+        
+
         // to avoid a silly lookup for silly input numbers, cap the radius to half of the theoretical maximum (lookup area gets doubled later on).
         radius = Math.Min(radius, MaxIterations / 4);
 

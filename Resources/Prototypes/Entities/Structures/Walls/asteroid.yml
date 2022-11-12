@@ -43,6 +43,8 @@
   - type: OreVein
     oreChance: 0.2
     oreRarityPrototypeId: RandomOreDistributionStandard
+  - type: CaveSupport
+  - type: CaveIn
 
 - type: entity
   id: AsteroidRockMining
@@ -58,3 +60,5 @@
   - type: OreVein
     oreChance: 0.33
     oreRarityPrototypeId: RandomOreDistributionStandard
+  - type: CaveSupport
+  - type: CaveIn
