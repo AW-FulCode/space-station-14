@@ -304,6 +304,8 @@
       - ChemicalAnalysisCircuitboard
       - ResearchSMESMachineCircuitboard
       - SeedExtractorMachineCircuitboard
+      - AnalysisComputerCircuitboard
+      - ArtifactAnalyzerMachineCircuitboard
   - type: MaterialStorage
     whitelist:
       tags:
@@ -339,7 +341,10 @@
       - Flash
       - FlashPayload
       - Handcuffs
+      - Zipties
       - Stunbaton
+      - ForensicPad
+      - ClothingEyesGlassesSecurity
       - RiotShield
       - CartridgePistol
       - CartridgeMagnum

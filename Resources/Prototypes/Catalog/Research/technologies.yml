@@ -337,6 +337,8 @@
     - FireAlarmElectronics
     - MailingUnitElectronics
     - ResearchSMESMachineCircuitboard
+    - AnalysisComputerCircuitboard
+    - ArtifactAnalyzerMachineCircuitboard
 
 - type: technology
   name: Power storage analysis results
