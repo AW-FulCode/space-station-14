@@ -12,6 +12,7 @@ using System.Linq;
 using Content.Shared.Audio;
 using Robust.Shared.Audio;
 using Robust.Shared.Player;
+using Robust.Shared.Map.Components;
 
 namespace Content.Server.Mining;
 
@@ -25,6 +26,7 @@ public sealed class MiningSystem : EntitySystem
 
     [Dependency] private readonly IMapManager _mapManager = default!;
     [Dependency] private readonly EntityLookupSystem _lookup = default!;
+    [Dependency] private readonly IEntityManager _entities = default!;
     /// <inheritdoc/>
     public override void Initialize()
     {
@@ -39,38 +41,104 @@ public sealed class MiningSystem : EntitySystem
         //check for all entities in range
         //if there are no walls or asteroid rocks in range, spawn rocks within the surrounding area
         var pos = Transform(uid).MapPosition;
+        var xform = _entities.GetComponent<TransformComponent>(uid);
 
         var range = component.RequiredSupportRange;
         var supported = false;
 
-        foreach (var entity in _lookup.GetEntitiesInRange(pos,range)) {
+        /*foreach (var entity in _lookup.GetEntitiesInRange(pos,range)) {
             if (entity != uid)
             {
                 if (EntityManager.TryGetComponent<CaveSupportComponent?>(entity, out var support))
                     supported = true;
             }
+        }*/
+
+        var box = Box2.CenteredAround(pos.Position, (range, range));
+        var mapGrids = _mapManager.FindGridsIntersecting(pos.MapId, box).ToList();
+        var grids = mapGrids.Select(x => x.GridEntityId).ToList();
+
+        //TODO factor support range again - will require some kind of recursive function to track outer supports
+
+        foreach (var grid in mapGrids)
+        {
+            void CheckSupportDirs(Direction dir1, Direction dir2)
+            {
+                // Currently no support for spreading off or across grids.
+                var origin = grid.TileIndicesFor(xform.Coordinates);
+                var index1 = origin + dir1.ToIntVec();
+                var index2 = origin + dir2.ToIntVec();
+                if (!grid.TryGetTileRef(index1, out var tile1) || tile1.Tile.IsEmpty || !grid.TryGetTileRef(index1, out var tile2) || tile2.Tile.IsEmpty)
+                    return;
+
+                if (EntityManager.TryGetComponent<MetaDataComponent>(uid, out var caveIn))
+                {
+                    var support1 = false;
+                    foreach (var entity in _lookup.GetEntitiesIntersecting(grid.GridTileToLocal(index1))) {
+                        if (entity != uid)
+                        {
+                            if (EntityManager.TryGetComponent<CaveSupportComponent?>(entity, out var support))
+                                support1 = true;
+                        }
+                    }
+                    var support2 = false;
+                    foreach (var entity in _lookup.GetEntitiesIntersecting(grid.GridTileToLocal(index2))) {
+                        if (entity != uid)
+                        {
+                            if (EntityManager.TryGetComponent<CaveSupportComponent?>(entity, out var support))
+                                support2 = true;
+                        }
+                    }
+                    if (support1 && support2)
+                        supported = true;
+                }
+            }
+
+            CheckSupportDirs(Direction.North, Direction.South);
+            CheckSupportDirs(Direction.North, Direction.SouthEast);
+            CheckSupportDirs(Direction.North, Direction.SouthWest);
+
+            CheckSupportDirs(Direction.West,Direction.East);
+            CheckSupportDirs(Direction.West, Direction.NorthEast);
+            CheckSupportDirs(Direction.West, Direction.SouthEast);
+
+            CheckSupportDirs(Direction.NorthEast,Direction.SouthWest);
+            CheckSupportDirs(Direction.NorthEast, Direction.South);
+            CheckSupportDirs(Direction.NorthEast, Direction.West);
+
+            CheckSupportDirs(Direction.NorthWest, Direction.SouthEast);
+            CheckSupportDirs(Direction.NorthWest, Direction.South);
+            CheckSupportDirs(Direction.NorthWest, Direction.East);
         }
+
+        //TODO factor impact range - will also require some kind of recursive function to track outer impact areas
 
         if (!supported)
         {
 
             SoundSystem.Play("/Audio/Effects/explosion1.ogg", Filter.Pvs(uid), uid, AudioHelpers.WithVariation(0.2f));
 
-            var box = Box2.CenteredAround(pos.Position, (range, range));
-            var mapGrids = _mapManager.FindGridsIntersecting(pos.MapId, box).ToList();
-            var grids = mapGrids.Select(x => x.GridEntityId).ToList();
-
             foreach (var grid in mapGrids)
             {
                 void SpreadToDir(Direction dir)
                 {
                     // Currently no support for spreading off or across grids.
-                    var origin = grid.TileIndicesFor(pos.Position);
+                    var origin = grid.TileIndicesFor(xform.Coordinates);
                     var index = origin + dir.ToIntVec();
                     if (!grid.TryGetTileRef(index, out var tile) || tile.Tile.IsEmpty)
                         return;
 
-                    if (EntityManager.TryGetComponent<MetaDataComponent>(uid, out var caveIn)) { 
+                    var occupied = false;
+                    foreach (var entity in _lookup.GetEntitiesIntersecting(grid.GridTileToLocal(index)))
+                    {
+                        if (entity != uid)
+                        {
+                            if (EntityManager.TryGetComponent<CaveSupportComponent?>(entity, out var support))
+                                occupied = true;
+                        }
+                    }
+
+                    if (!occupied && EntityManager.TryGetComponent<MetaDataComponent>(uid, out var caveIn)) { 
                         if (caveIn.EntityPrototype != null)
                         {
                             var newEffect = EntityManager.SpawnEntity(
