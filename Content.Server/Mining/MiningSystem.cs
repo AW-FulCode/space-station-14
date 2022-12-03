@@ -43,7 +43,7 @@ public sealed class MiningSystem : EntitySystem
         var pos = Transform(uid).MapPosition;
         var xform = _entities.GetComponent<TransformComponent>(uid);
 
-        var range = component.RequiredSupportRange;
+        var range = component.SupportRange;
         var supported = false;
 
         /*foreach (var entity in _lookup.GetEntitiesInRange(pos,range)) {
@@ -62,53 +62,106 @@ public sealed class MiningSystem : EntitySystem
 
         foreach (var grid in mapGrids)
         {
-            void CheckSupportDirs(Direction dir1, Direction dir2)
+            //cave-in prevention requires TWO supports on opposing sides 
+            bool CheckSupportDirs(Vector2i origin, Direction dir1, Direction dir2, bool supported, int range, int count)
             {
-                // Currently no support for spreading off or across grids.
-                var origin = grid.TileIndicesFor(xform.Coordinates);
-                var index1 = origin + dir1.ToIntVec();
-                var index2 = origin + dir2.ToIntVec();
-                if (!grid.TryGetTileRef(index1, out var tile1) || tile1.Tile.IsEmpty || !grid.TryGetTileRef(index1, out var tile2) || tile2.Tile.IsEmpty)
-                    return;
+                count++;
 
-                if (EntityManager.TryGetComponent<MetaDataComponent>(uid, out var caveIn))
+                if (!supported)
                 {
-                    var support1 = false;
-                    foreach (var entity in _lookup.GetEntitiesIntersecting(grid.GridTileToLocal(index1))) {
-                        if (entity != uid)
+                    //Console.WriteLine("Was not supported before range " + count);
+                    // Currently no support for spreading off or across grids.
+                    var index1 = origin + dir1.ToIntVec();
+                    var index2 = origin + dir2.ToIntVec();     
+
+                    if (EntityManager.TryGetComponent<MetaDataComponent>(uid, out var caveIn))
+                    {
+                        var support1 = false;
+                        foreach (var entity in _lookup.GetEntitiesIntersecting(grid.GridTileToLocal(index1)))
                         {
-                            if (EntityManager.TryGetComponent<CaveSupportComponent?>(entity, out var support))
-                                support1 = true;
+                            if (entity != uid)
+                            {
+                                if (EntityManager.TryGetComponent<CaveSupportComponent?>(entity, out var support))
+                                    support1 = true;
+                            }
                         }
-                    }
-                    var support2 = false;
-                    foreach (var entity in _lookup.GetEntitiesIntersecting(grid.GridTileToLocal(index2))) {
-                        if (entity != uid)
+
+                        //if there is nothing for support but the support range has not been fully expended, check if the support's support exists
+                        if (!support1 && range > count)
                         {
-                            if (EntityManager.TryGetComponent<CaveSupportComponent?>(entity, out var support))
-                                support2 = true;
+                            //TODO maybe find a better way to do this... (compile directions in to a list, iterate through list)
+                            support1 = CheckSupportDirs(index1, Direction.North, Direction.South, support1, range, count);
+                            support1 = CheckSupportDirs(index1, Direction.North, Direction.SouthEast, support1, range, count);
+                            support1 = CheckSupportDirs(index1, Direction.North, Direction.SouthWest, support1, range, count);
+
+                            support1 = CheckSupportDirs(index1, Direction.West, Direction.East, support1, range, count);
+                            support1 = CheckSupportDirs(index1, Direction.West, Direction.NorthEast, support1, range, count);
+                            support1 = CheckSupportDirs(index1, Direction.West, Direction.SouthEast, support1, range, count);
+
+                            support1 = CheckSupportDirs(index1, Direction.NorthEast, Direction.SouthWest, support1, range, count);
+                            support1 = CheckSupportDirs(index1, Direction.NorthEast, Direction.South, support1, range, count);
+                            support1 = CheckSupportDirs(index1, Direction.NorthEast, Direction.West, support1, range, count);
+
+                            support1 = CheckSupportDirs(index1, Direction.NorthWest, Direction.SouthEast, support1, range, count);
+                            support1 = CheckSupportDirs(index1, Direction.NorthWest, Direction.South, support1, range, count);
+                            support1 = CheckSupportDirs(index1, Direction.NorthWest, Direction.East, support1, range, count);
                         }
+
+                        var support2 = false;
+                        foreach (var entity in _lookup.GetEntitiesIntersecting(grid.GridTileToLocal(index2)))
+                        {
+                            if (entity != uid)
+                            {
+                                if (EntityManager.TryGetComponent<CaveSupportComponent?>(entity, out var support))
+                                    support2 = true;
+                            }
+                        }
+                        //if there is nothing for support but the support range has not been fully expended, check if the support's support exists
+                        if (!support2 && range > count)
+                        {
+                            //TODO maybe find a better way to do this... (see above)
+                            support2 = CheckSupportDirs(index2, Direction.North, Direction.South, support2, range, count);
+                            support2 = CheckSupportDirs(index2, Direction.North, Direction.SouthEast, support2, range, count);
+                            support2 = CheckSupportDirs(index2, Direction.North, Direction.SouthWest, support2, range, count);
+
+                            support2 = CheckSupportDirs(index2, Direction.West, Direction.East, support2, range, count);
+                            support2 = CheckSupportDirs(index2, Direction.West, Direction.NorthEast, support2, range, count);
+                            support2 = CheckSupportDirs(index2, Direction.West, Direction.SouthEast, support2, range, count);
+
+                            support2 = CheckSupportDirs(index2, Direction.NorthEast, Direction.SouthWest, support2, range, count);
+                            support2 = CheckSupportDirs(index2, Direction.NorthEast, Direction.South, support2, range, count);
+                            support2 = CheckSupportDirs(index2, Direction.NorthEast, Direction.West, support2, range, count);
+
+                            support2 = CheckSupportDirs(index2, Direction.NorthWest, Direction.SouthEast, support2, range, count);
+                            support2 = CheckSupportDirs(index2, Direction.NorthWest, Direction.South, support2, range, count);
+                            support2 = CheckSupportDirs(index2, Direction.NorthWest, Direction.East, support2, range, count);
+                        }
+                        if (support1 && support2)
+                            supported = true;
                     }
-                    if (support1 && support2)
-                        supported = true;
                 }
+
+                //Console.WriteLine("supported at range "+ count);
+                return supported;
             }
 
-            CheckSupportDirs(Direction.North, Direction.South);
-            CheckSupportDirs(Direction.North, Direction.SouthEast);
-            CheckSupportDirs(Direction.North, Direction.SouthWest);
+            //TODO maybe find a better way to do this... (see above)
+            var origin = grid.TileIndicesFor(xform.Coordinates);
+            supported = CheckSupportDirs(origin, Direction.North, Direction.South, supported, range, 0);
+            supported = CheckSupportDirs(origin, Direction.North, Direction.SouthEast, supported, range, 0);
+            supported = CheckSupportDirs(origin, Direction.North, Direction.SouthWest, supported, range, 0);
 
-            CheckSupportDirs(Direction.West,Direction.East);
-            CheckSupportDirs(Direction.West, Direction.NorthEast);
-            CheckSupportDirs(Direction.West, Direction.SouthEast);
+            supported = CheckSupportDirs(origin, Direction.West,Direction.East, supported, range, 0);
+            supported = CheckSupportDirs(origin, Direction.West, Direction.NorthEast, supported, range, 0);
+            supported = CheckSupportDirs(origin, Direction.West, Direction.SouthEast, supported, range, 0);
 
-            CheckSupportDirs(Direction.NorthEast,Direction.SouthWest);
-            CheckSupportDirs(Direction.NorthEast, Direction.South);
-            CheckSupportDirs(Direction.NorthEast, Direction.West);
+            supported = CheckSupportDirs(origin, Direction.NorthEast,Direction.SouthWest, supported, range, 0);
+            supported = CheckSupportDirs(origin, Direction.NorthEast, Direction.South, supported, range, 0);
+            supported = CheckSupportDirs(origin, Direction.NorthEast, Direction.West, supported, range, 0);
 
-            CheckSupportDirs(Direction.NorthWest, Direction.SouthEast);
-            CheckSupportDirs(Direction.NorthWest, Direction.South);
-            CheckSupportDirs(Direction.NorthWest, Direction.East);
+            supported = CheckSupportDirs(origin, Direction.NorthWest, Direction.SouthEast, supported, range, 0);
+            supported = CheckSupportDirs(origin, Direction.NorthWest, Direction.South, supported, range, 0);
+            supported = CheckSupportDirs(origin, Direction.NorthWest, Direction.East, supported, range, 0);
         }
 
         //TODO factor impact range - will also require some kind of recursive function to track outer impact areas

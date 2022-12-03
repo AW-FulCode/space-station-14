@@ -6,6 +6,6 @@ using Content.Shared.Mining;
 [RegisterComponent]
 public sealed class CaveInComponent : Component
 {
-    [DataField("requiredSupportRange")]
-    public float RequiredSupportRange = 1.0f;
+    [DataField("supportRange")]
+    public int SupportRange = 2;
 }
