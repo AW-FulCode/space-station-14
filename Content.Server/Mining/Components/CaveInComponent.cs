@@ -8,4 +8,7 @@ public sealed class CaveInComponent : Component
 {
     [DataField("supportRange")]
     public int SupportRange = 2;
+
+    [DataField("collapseRange")]
+    public int CollapseRange = 2;
 }

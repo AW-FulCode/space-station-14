@@ -44,6 +44,7 @@ public sealed class MiningSystem : EntitySystem
         var xform = _entities.GetComponent<TransformComponent>(uid);
 
         var range = component.SupportRange;
+        var impact = component.CollapseRange;
         var supported = false;
 
         /*foreach (var entity in _lookup.GetEntitiesInRange(pos,range)) {
@@ -173,13 +174,13 @@ public sealed class MiningSystem : EntitySystem
 
             foreach (var grid in mapGrids)
             {
-                void SpreadToDir(Direction dir)
+                void SpreadToDir(Vector2i origin, Direction dir, int range, int count)
                 {
+
+                    count++;
+
                     // Currently no support for spreading off or across grids.
-                    var origin = grid.TileIndicesFor(xform.Coordinates);
                     var index = origin + dir.ToIntVec();
-                    if (!grid.TryGetTileRef(index, out var tile) || tile.Tile.IsEmpty)
-                        return;
 
                     var occupied = false;
                     foreach (var entity in _lookup.GetEntitiesIntersecting(grid.GridTileToLocal(index)))
@@ -199,16 +200,28 @@ public sealed class MiningSystem : EntitySystem
                                 grid.GridTileToLocal(index));
                         }
                     }
+
+                    if (count < range) {
+                        SpreadToDir(index, Direction.North, impact, count);
+                        SpreadToDir(index, Direction.NorthEast, impact, count);
+                        SpreadToDir(index, Direction.NorthWest, impact, count);
+                        SpreadToDir(index, Direction.East, impact, count);
+                        SpreadToDir(index, Direction.South, impact, count);
+                        SpreadToDir(index, Direction.SouthEast, impact, count);
+                        SpreadToDir(index, Direction.SouthWest, impact, count);
+                        SpreadToDir(index, Direction.West, impact, count);
+                    }
                 }
 
-                SpreadToDir(Direction.North);
-                SpreadToDir(Direction.NorthEast);
-                SpreadToDir(Direction.NorthWest);
-                SpreadToDir(Direction.East);
-                SpreadToDir(Direction.South);
-                SpreadToDir(Direction.SouthEast);
-                SpreadToDir(Direction.SouthWest);
-                SpreadToDir(Direction.West);
+                var origin = grid.TileIndicesFor(xform.Coordinates);
+                SpreadToDir(origin,Direction.North,impact,0);
+                SpreadToDir(origin, Direction.NorthEast, impact, 0);
+                SpreadToDir(origin, Direction.NorthWest, impact, 0);
+                SpreadToDir(origin, Direction.East, impact, 0);
+                SpreadToDir(origin, Direction.South, impact, 0);
+                SpreadToDir(origin, Direction.SouthEast, impact, 0);
+                SpreadToDir(origin, Direction.SouthWest, impact, 0);
+                SpreadToDir(origin, Direction.West, impact, 0);
             }
         }
 
