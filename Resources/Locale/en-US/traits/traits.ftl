@@ -1,4 +1,4 @@
-﻿trait-blindness-name = Blindness
+trait-blindness-name = Blindness
 trait-blindness-desc = You lack vision
 
 trait-narcolepsy-name = Narcolepsy
@@ -19,3 +19,6 @@ trait-paracusia-desc = You hear sounds that aren't really there
 
 trait-uncloneable-name = Uncloneable
 trait-uncloneable-desc = Cannot be cloned
+
+trait-accentless-name = Accentless
+trait-accentless-desc = You don't have an accent
