@@ -15,12 +15,12 @@ public sealed class AccentlessSystem : EntitySystem
     {
         base.Initialize();
 
-        SubscribeLocalEvent<PlayerSpawnCompleteEvent>(OnPlayerSpawnComplete);
+        SubscribeLocalEvent<AccentlessComponent, ComponentStartup>(RemoveAccents);
     }
 
-    private void OnPlayerSpawnComplete(PlayerSpawnCompleteEvent ev)
+    private void RemoveAccents(EntityUid uid, AccentlessComponent component, ComponentStartup args)
     {
-        var player = ev.Mob;
+        var player = uid;
         foreach (var t in AccentList)
         {
             if (HasComp(player, t))
