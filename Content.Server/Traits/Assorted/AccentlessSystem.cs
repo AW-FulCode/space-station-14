@@ -4,11 +4,11 @@ using Content.Server.Speech.Components;
 namespace Content.Server.Traits.Assorted;
 
 /// <summary>
-/// This handles...
+/// This handles removing accents when using the accentless trait.
 /// </summary>
 public sealed class AccentlessSystem : EntitySystem
 {
-    private List<Type> AccentList = new() { typeof(ReplacementAccentComponent), typeof(LizardAccentComponent) };
+    private readonly List<Type> _accentList = new() { typeof(ReplacementAccentComponent), typeof(LizardAccentComponent) };
 
     /// <inheritdoc/>
     public override void Initialize()
@@ -20,11 +20,10 @@ public sealed class AccentlessSystem : EntitySystem
 
     private void RemoveAccents(EntityUid uid, AccentlessComponent component, ComponentStartup args)
     {
-        var player = uid;
-        foreach (var t in AccentList)
+        foreach (var accent in _accentList)
         {
-            if (HasComp(player, t))
-                EntityManager.RemoveComponent(player, t);
+            if (HasComp(uid, accent))
+                EntityManager.RemoveComponent(uid, accent);
         }
     }
 }
