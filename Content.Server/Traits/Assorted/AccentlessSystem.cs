@@ -22,8 +22,7 @@ public sealed class AccentlessSystem : EntitySystem
     {
         foreach (var accent in _accentList)
         {
-            if (HasComp(uid, accent))
-                EntityManager.RemoveComponent(uid, accent);
+            EntityManager.RemoveComponent(uid, accent);
         }
     }
 }
