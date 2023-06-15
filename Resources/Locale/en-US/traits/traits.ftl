@@ -22,3 +22,6 @@ trait-uncloneable-desc = Cannot be cloned
 
 trait-accentless-name = Accentless
 trait-accentless-desc = You don't have an accent
+
+trait-pirate-accent-name = Pirate Accent
+trait-pirate-accent-desc = You can't stop speaking like a pirate!
