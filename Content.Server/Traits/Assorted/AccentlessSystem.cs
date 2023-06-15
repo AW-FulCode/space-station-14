@@ -1,6 +1,3 @@
-using Content.Server.GameTicking;
-using Content.Server.Speech.Components;
-
 namespace Content.Server.Traits.Assorted;
 
 /// <summary>
@@ -8,8 +5,6 @@ namespace Content.Server.Traits.Assorted;
 /// </summary>
 public sealed class AccentlessSystem : EntitySystem
 {
-    private readonly List<Type> _accentList = new() { typeof(ReplacementAccentComponent), typeof(LizardAccentComponent) };
-
     /// <inheritdoc/>
     public override void Initialize()
     {
@@ -20,7 +15,7 @@ public sealed class AccentlessSystem : EntitySystem
 
     private void RemoveAccents(EntityUid uid, AccentlessComponent component, ComponentStartup args)
     {
-        foreach (var accent in _accentList)
+        foreach (var accent in component.RemovedAccents)
         {
             RemComp(uid, accent);
         }
